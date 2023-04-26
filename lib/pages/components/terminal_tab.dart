@@ -141,6 +141,19 @@ class _TerminalTabState extends State<TerminalTab> {
         .then((value) {
       if (value == null) return;
       terminalController.addCommand(value);
+    }).onError((error, stackTrace) {
+      showDialog(
+        context: context,
+        builder: (c) => SimpleDialog(
+          title: Text("Erro ao enviar mensagem!"),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(error.toString()),
+            )
+          ],
+        ),
+      );
     });
   }
 }

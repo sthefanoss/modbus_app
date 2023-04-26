@@ -98,32 +98,37 @@ class CommunicationController extends ChangeNotifier {
     if (isLoading) return null;
     isLoading = true;
     notifyListeners();
-    open();
-    final messageAsBinary = stringToBinary(message);
-    final messageCrc = getCrc(messageAsBinary);
-    final request = Uint8List.fromList([...messageAsBinary, ...messageCrc]);
+    try {
+      open();
+      final messageAsBinary = stringToBinary(message);
+      final messageCrc = getCrc(messageAsBinary);
+      final request = Uint8List.fromList([...messageAsBinary, ...messageCrc]);
 
-    serialPort?.flush();
-    print(serialPort?.write(request, timeout: 50));
-    final response = serialPort!.read(20, timeout: 550);
-    final responseCrc = response.length > 2
-        ? response.sublist(response.length - 2, response.length)
-        : Uint8List(0);
-    final formattedResponseData = response.length > 2
-        ? binaryToString(response.sublist(0, response.length - 2))
-        : "";
-    close();
-    await Future.delayed(Duration(milliseconds: 1000));
-    isLoading = false;
-    notifyListeners();
-    return Foo(
-      formattedRequestData: message,
-      request: request,
-      requestCrc: binaryToString(messageCrc),
-      response: response,
-      formattedResponseData: formattedResponseData,
-      responseCrc: binaryToString(responseCrc),
-    );
+      serialPort?.flush();
+      print(serialPort?.write(request, timeout: 50));
+      final response = serialPort!.read(20, timeout: 550);
+      final responseCrc = response.length > 2
+          ? response.sublist(response.length - 2, response.length)
+          : Uint8List(0);
+      final formattedResponseData = response.length > 2
+          ? binaryToString(response.sublist(0, response.length - 2))
+          : "";
+      close();
+      await Future.delayed(Duration(milliseconds: 1000));
+      return Foo(
+        formattedRequestData: message,
+        request: request,
+        requestCrc: binaryToString(messageCrc),
+        response: response,
+        formattedResponseData: formattedResponseData,
+        responseCrc: binaryToString(responseCrc),
+      );
+    } catch (e) {
+      rethrow;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }
 

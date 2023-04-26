@@ -32,7 +32,24 @@ class _TestTabState extends State<TestTab> {
                 itemBuilder: (_, index) => TestCard(
                   test: testController.tests[index],
                   remove: TestController.instance.removeTest,
-                  play: TestController.instance.run,
+                  play: (t) async {
+                    try {
+                      await TestController.instance.run(t);
+                    } catch (e) {
+                      showDialog(
+                        context: context,
+                        builder: (c) => SimpleDialog(
+                          title: Text("Erro ao enviar mensagem!"),
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(e.toString()),
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                  },
                   edit: (t) {
                     TestForm(
                       onSaved: (tt) =>
@@ -83,8 +100,23 @@ class _TestTabState extends State<TestTab> {
 
   void submitAll() async {
     TestController.instance.resetTests();
-    for (final test in TestController.instance.tests) {
-      await TestController.instance.run(test);
+    try {
+      for (final test in TestController.instance.tests) {
+        await TestController.instance.run(test);
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (c) => SimpleDialog(
+          title: Text("Erro ao enviar mensagem!"),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(e.toString()),
+            )
+          ],
+        ),
+      );
     }
   }
 }
