@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
-class TerminalController {
-  final textController = TextEditingController();
-  final commands = <String>[];
-  bool fanEnabled = false;
-  bool lampEnabled = false;
+import 'communication_controller.dart';
 
-  late VoidCallback setState;
+class TerminalController extends ChangeNotifier {
+  TerminalController._() {
+    textController.text = "01010064000A";
+  }
+  static final instance = TerminalController._();
+
+  final textController = TextEditingController();
+
+  final commands = <Foo>[];
+  bool isLoading = false;
+
+  void addCommand(Foo entry) {
+    commands.insert(0, entry);
+    notifyListeners();
+  }
 }
