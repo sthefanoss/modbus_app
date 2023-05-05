@@ -17,49 +17,65 @@ class _CommunicationTabState extends State<CommunicationTab> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: communicationController,
-      builder: (context, _) =>
-          ListView(padding: const EdgeInsets.all(24), children: [
-        DecoratedDropdownButton<String>(
-          labelText: 'Porta',
-          onChanged: communicationController.onSelectCom,
-          value: communicationController.selectedCom,
-          items: communicationController.availablePorts,
-          itemBuilder: (e) => DropdownMenuItem(
-            value: e,
-            child: Text(e),
+      builder: (context, _) => ListView(
+        padding: const EdgeInsets.all(24),
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: DecoratedDropdownButton<String>(
+                  labelText: 'Porta',
+                  onChanged: communicationController.onSelectCom,
+                  value: communicationController.selectedCom,
+                  items: communicationController.availablePorts,
+                  itemBuilder: (e) => DropdownMenuItem(
+                    value: e,
+                    child: Text(e),
+                  ),
+                ),
+              ),
+              Container(
+                alignment: Alignment.centerRight,
+                width: 50,
+                child: IconButton(
+                  onPressed: CommunicationController.instance.refreshPorts,
+                  icon: const Icon(Icons.autorenew_rounded),
+                ),
+              )
+            ],
           ),
-        ),
-        DecoratedDropdownButton<int>(
-          labelText: 'Taxa',
-          value: communicationController.baudRate,
-          onChanged: communicationController.setBaudRate,
-          items: CommunicationController.baudRatesOptions,
-          itemBuilder: (e) => DropdownMenuItem(
-            value: e,
-            child: Text(e.toString()),
+          DecoratedDropdownButton<int>(
+            labelText: 'Taxa',
+            value: communicationController.baudRate,
+            onChanged: communicationController.setBaudRate,
+            items: CommunicationController.baudRatesOptions,
+            itemBuilder: (e) => DropdownMenuItem(
+              value: e,
+              child: Text(e.toString()),
+            ),
           ),
-        ),
-        DecoratedDropdownButton<int>(
-          labelText: 'Paridade',
-          value: communicationController.parity,
-          items: CommunicationController.parityBitsOptions.keys,
-          onChanged: communicationController.setParityBits,
-          itemBuilder: (e) => DropdownMenuItem(
-            value: e,
-            child: Text(CommunicationController.parityBitsOptions[e]!),
+          DecoratedDropdownButton<int>(
+            labelText: 'Paridade',
+            value: communicationController.parity,
+            items: CommunicationController.parityBitsOptions.keys,
+            onChanged: communicationController.setParityBits,
+            itemBuilder: (e) => DropdownMenuItem(
+              value: e,
+              child: Text(CommunicationController.parityBitsOptions[e]!),
+            ),
           ),
-        ),
-        DecoratedDropdownButton<int>(
-          labelText: 'StopBits',
-          value: communicationController.stopBits,
-          items: CommunicationController.stopBitsOptions.keys,
-          onChanged: communicationController.setStopBits,
-          itemBuilder: (e) => DropdownMenuItem(
-            value: e,
-            child: Text(CommunicationController.stopBitsOptions[e]!),
+          DecoratedDropdownButton<int>(
+            labelText: 'StopBits',
+            value: communicationController.stopBits,
+            items: CommunicationController.stopBitsOptions.keys,
+            onChanged: communicationController.setStopBits,
+            itemBuilder: (e) => DropdownMenuItem(
+              value: e,
+              child: Text(CommunicationController.stopBitsOptions[e]!),
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

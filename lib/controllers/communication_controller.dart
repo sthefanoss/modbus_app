@@ -24,13 +24,13 @@ class CommunicationController extends ChangeNotifier {
   int parity = SerialPortParity.none;
 
   void refreshPorts() {
+    selectedCom = null;
     availablePorts
       ..clear()
       ..addAll(SerialPort.availablePorts..sort());
     notifyListeners();
-
-    onSelectCom(availablePorts.last);
-    setStopBits(1);
+    if (availablePorts.isEmpty) return;
+    onSelectCom(availablePorts.first);
   }
 
   void onSelectCom(String? value) {

@@ -195,15 +195,14 @@ class TestCard extends StatelessWidget {
           ],
         ),
       ),
-      title: Row(
-        children: [Text("Descrição: "), SelectableText(test.name)],
+      title:  SelectableText('Descrição: ${test.name}',maxLines: 3,
       ),
-      subtitle: Column(
+      subtitle:
+
+      Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [Text("Resosta esperada: "), SelectableText(test.expect)],
-          ),
+          SelectableText('Descrição: ${test.name}',maxLines: 3,),
           if (test.response != null)
             Row(
               children: [
