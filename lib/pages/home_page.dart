@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:modbus_app/controllers/theme_controller.dart';
 import 'package:modbus_app/pages/components/terminal_tab.dart';
 
 import '../controllers/communication_controller.dart';
@@ -25,6 +26,14 @@ class _HomePageState extends State<HomePage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
+          title: Text('Supervisório Modbus'),
+          actions: [
+            IconButton(
+                onPressed: ThemeController.instance.toggleTheme,
+                icon: ThemeController.instance.isDarkTheme
+                    ? Icon(Icons.dark_mode)
+                    : Icon(Icons.light_mode))
+          ],
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Comunicação', icon: Icon(Icons.cable)),

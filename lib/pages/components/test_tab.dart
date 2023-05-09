@@ -149,70 +149,73 @@ class TestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      // contentPadding: EdgeInsets.only(right: 60),
-      leading: CircleAvatar(
-        child: Text('${index + 1}'),
-      ),
-      trailing: SizedBox(
-        width: 250,
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () => play(test),
-              icon: Icon(
-                test.response == null
-                    ? Icons.play_arrow_outlined
-                    : Icons.play_arrow,
-                color: test.response == null
-                    ? Colors.blueGrey
-                    : test.expect == test.response
-                        ? Colors.green
-                        : Colors.red,
+    return LayoutBuilder(builder: (_, constraints) {
+      const breakpoint = 300;
+      return ListTile(
+        leading: constraints.maxWidth > breakpoint
+            ? CircleAvatar(child: Text('${index + 1}'))
+            : null,
+        trailing: constraints.maxWidth > 300 ? SizedBox(
+          width: 250,
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () => play(test),
+                icon: Icon(
+                  test.response == null
+                      ? Icons.play_arrow_outlined
+                      : Icons.play_arrow,
+                  color: test.response == null
+                      ? Colors.blueGrey
+                      : test.expect == test.response
+                          ? Colors.green
+                          : Colors.red,
+                ),
               ),
-            ),
-            SizedBox(width: 24),
-            IconButton(
-              onPressed: () => edit(test),
-              icon: Icon(Icons.edit),
-              color: Colors.amber,
-            ),
-            IconButton(
-              onPressed: index == 0 ? null : () => reorder(index, index - 1),
-              icon: Icon(Icons.arrow_circle_down),
-              color: Colors.blue,
-            ),
-            IconButton(
-                onPressed: isLast ? null : () => reorder(index, index + 1),
+              SizedBox(width: 24),
+              IconButton(
+                onPressed: () => edit(test),
+                icon: Icon(Icons.edit),
+                color: Colors.amber,
+              ),
+              IconButton(
+                onPressed: index == 0 ? null : () => reorder(index, index - 1),
+                icon: Icon(Icons.arrow_circle_down),
                 color: Colors.blue,
-                icon: Icon(Icons.arrow_circle_up_outlined)),
-            SizedBox(width: 24),
-            IconButton(
-              onPressed: () => remove(test),
-              icon: Icon(Icons.delete),
-              color: Colors.red,
+              ),
+              IconButton(
+                  onPressed: isLast ? null : () => reorder(index, index + 1),
+                  color: Colors.blue,
+                  icon: Icon(Icons.arrow_circle_up_outlined)),
+              SizedBox(width: 24),
+              IconButton(
+                onPressed: () => remove(test),
+                icon: Icon(Icons.delete),
+                color: Colors.red,
+              ),
+            ],
+          ),
+        ) : null,
+        title: SelectableText(
+          'Descrição: ${test.name}',
+          maxLines: 1,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SelectableText(
+              'Descrição: ${test.name}',
+              maxLines: 1,
             ),
+            if (test.response != null)
+              SelectableText(
+                'Resposta: '
+                '${test.response!.isEmpty ? "Sem resposta" : test.response!}',
+                maxLines: 1,
+              ),
           ],
         ),
-      ),
-      title:  SelectableText('Descrição: ${test.name}',maxLines: 3,
-      ),
-      subtitle:
-
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SelectableText('Descrição: ${test.name}',maxLines: 3,),
-          if (test.response != null)
-            Row(
-              children: [
-                Text("Resposta: "),
-                SelectableText(
-                    test.response!.isEmpty ? "Sem resposta" : test.response!)
-              ],
-            ),
-        ],
-      ),
-    );
+      );
+    });
   }
 }

@@ -12,6 +12,7 @@ class TestForm extends StatefulWidget {
 
   void show(BuildContext context) {
     showBottomSheet(
+      enableDrag: false,
       context: context,
       builder: (c) => this,
     );
@@ -60,6 +61,7 @@ class _TestFormState extends State<TestForm> {
   Widget build(BuildContext context) {
     return BottomSheet(
       onClosing: () {},
+      enableDrag: false,
       builder: (c) => Form(
         key: key,
         child: Padding(
@@ -74,6 +76,11 @@ class _TestFormState extends State<TestForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      Text(
+                        widget.test != null ? "Editar teste" : "Criar teste",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Spacer(),
                       IconButton(
                         onPressed: submit,
                         icon: Icon(Icons.save),
