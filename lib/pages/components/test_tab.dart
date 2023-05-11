@@ -48,6 +48,7 @@ class _TestTabState extends State<TestTab> {
                           ],
                         ),
                       );
+                      rethrow;
                     }
                   },
                   edit: (t) {
@@ -55,6 +56,13 @@ class _TestTabState extends State<TestTab> {
                       onSaved: (tt) =>
                           TestController.instance.editTest(index, tt),
                       test: t,
+                    ).show(context);
+                  },
+                  copy: (t) {
+                    TestForm(
+                      onSaved: TestController.instance.addTest,
+                      test: t,
+                      isCopyMode: true,
                     ).show(context);
                   },
                   index: index,
@@ -130,6 +138,7 @@ class TestCard extends StatelessWidget {
     required this.index,
     required this.reorder,
     required this.isLast,
+    required this.copy,
     super.key,
   });
 
@@ -140,6 +149,8 @@ class TestCard extends StatelessWidget {
   final ValueChanged<Test> play;
 
   final ValueChanged<Test> edit;
+
+  final ValueChanged<Test> copy;
 
   final void Function(int index, int newPosition) reorder;
 
@@ -155,47 +166,58 @@ class TestCard extends StatelessWidget {
         leading: constraints.maxWidth > breakpoint
             ? CircleAvatar(child: Text('${index + 1}'))
             : null,
-        trailing: constraints.maxWidth > 300 ? SizedBox(
-          width: 250,
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: () => play(test),
-                icon: Icon(
-                  test.response == null
-                      ? Icons.play_arrow_outlined
-                      : Icons.play_arrow,
-                  color: test.response == null
-                      ? Colors.blueGrey
-                      : test.expect == test.response
-                          ? Colors.green
-                          : Colors.red,
+        trailing: constraints.maxWidth > 300
+            ? SizedBox(
+                width: 340,
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => play(test),
+                      icon: Icon(
+                        test.response == null
+                            ? Icons.play_arrow_outlined
+                            : Icons.play_arrow,
+                        color: test.response == null
+                            ? Colors.blueGrey
+                            : test.expect == test.response
+                                ? Colors.green
+                                : Colors.red,
+                      ),
+                    ),
+                    SizedBox(width: 24),
+                    IconButton(
+                      onPressed: () => edit(test),
+                      icon: Icon(Icons.edit),
+                      color: Colors.amber,
+                    ),
+                    SizedBox(width: 24),
+                    IconButton(
+                      onPressed: () => copy(test),
+                      icon: Icon(Icons.copy),
+                      color: Colors.amber,
+                    ),
+                    SizedBox(width: 24),
+                    IconButton(
+                      onPressed:
+                          index == 0 ? null : () => reorder(index, index - 1),
+                      icon: Icon(Icons.arrow_circle_down),
+                      color: Colors.blue,
+                    ),
+                    IconButton(
+                        onPressed:
+                            isLast ? null : () => reorder(index, index + 1),
+                        color: Colors.blue,
+                        icon: Icon(Icons.arrow_circle_up_outlined)),
+                    SizedBox(width: 24),
+                    IconButton(
+                      onPressed: () => remove(test),
+                      icon: Icon(Icons.delete),
+                      color: Colors.red,
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(width: 24),
-              IconButton(
-                onPressed: () => edit(test),
-                icon: Icon(Icons.edit),
-                color: Colors.amber,
-              ),
-              IconButton(
-                onPressed: index == 0 ? null : () => reorder(index, index - 1),
-                icon: Icon(Icons.arrow_circle_down),
-                color: Colors.blue,
-              ),
-              IconButton(
-                  onPressed: isLast ? null : () => reorder(index, index + 1),
-                  color: Colors.blue,
-                  icon: Icon(Icons.arrow_circle_up_outlined)),
-              SizedBox(width: 24),
-              IconButton(
-                onPressed: () => remove(test),
-                icon: Icon(Icons.delete),
-                color: Colors.red,
-              ),
-            ],
-          ),
-        ) : null,
+              )
+            : null,
         title: SelectableText(
           'Descrição: ${test.name}',
           maxLines: 1,
@@ -204,7 +226,11 @@ class TestCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SelectableText(
-              'Descrição: ${test.name}',
+              'Requisição: ${test.request}',
+              maxLines: 1,
+            ),
+            SelectableText(
+              'Resposta esperada: ${test.expect}',
               maxLines: 1,
             ),
             if (test.response != null)

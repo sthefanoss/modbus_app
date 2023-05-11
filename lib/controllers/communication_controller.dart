@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -94,7 +95,8 @@ class CommunicationController extends ChangeNotifier {
 
   bool isLoading = false;
 
-  Future<Foo?> sendMessage(String message) async {
+  Future<Foo?> sendMessage(String message,
+      {Duration delay = const Duration(milliseconds: 500)}) async {
     if (isLoading) return null;
     isLoading = true;
     notifyListeners();
@@ -114,7 +116,7 @@ class CommunicationController extends ChangeNotifier {
           ? binaryToString(response.sublist(0, response.length - 2))
           : "";
       close();
-      await Future.delayed(Duration(milliseconds: 1000));
+      await Future.delayed(delay);
       return Foo(
         formattedRequestData: message,
         request: request,

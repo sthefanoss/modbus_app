@@ -26,7 +26,7 @@ class TestController extends ChangeNotifier {
   final tests = <Test>[];
 
   Future<void> addTest(Test test) async {
-    tests.insert(0, test);
+    tests.add(test);
     await localStorage.put(
       'tests',
       jsonEncode(tests.map((e) => e.toJson()).toList()),
@@ -53,7 +53,7 @@ class TestController extends ChangeNotifier {
   }
 
   void resetTests() {
-    for(final test in tests) {
+    for (final test in tests) {
       test.response = null;
     }
     notifyListeners();
@@ -81,23 +81,29 @@ class Test {
   String request;
   String expect;
   String? response;
+  Duration delay;
 
   Test({
     required this.name,
     required this.request,
     required this.expect,
+    this.delay = Duration.zero,
     this.response,
   });
 
   Test.fromJson(Map<String, String> json)
       : name = json['name'] ?? '',
         request = json['command']!,
-        expect = json['expect']!;
+        expect = json['expect']!,
+        delay = Duration(
+          microseconds: (int.tryParse(json['delay'] ?? '') ?? 0),
+        );
 
   Map<String, String> toJson() => {
         'name': name,
         'command': request,
         'expect': expect,
+        'delay': delay.inMicroseconds.toString(),
       };
 
   @override
@@ -105,7 +111,8 @@ class Test {
     if (other is! Test) return false;
     return name == other.name &&
         request == other.request &&
-        expect == other.expect;
+        expect == other.expect &&
+        delay == other.delay;
   }
 
   @override
@@ -113,5 +120,6 @@ class Test {
         name,
         request,
         expect,
+        delay.inMicroseconds,
       ]);
 }

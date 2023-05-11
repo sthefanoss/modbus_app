@@ -5,9 +5,15 @@ import '../controllers/test_controller.dart';
 import '../pages/components/terminal_tab.dart';
 
 class TestForm extends StatefulWidget {
-  const TestForm({this.test, required this.onSaved, super.key});
+  const TestForm({
+    this.test,
+    required this.onSaved,
+    super.key,
+    this.isCopyMode = false,
+  }) : assert(!isCopyMode || (isCopyMode && test != null));
 
   final Test? test;
+  final bool isCopyMode;
   final Future<void> Function(Test) onSaved;
 
   void show(BuildContext context) {
@@ -77,7 +83,7 @@ class _TestFormState extends State<TestForm> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        widget.test != null ? "Editar teste" : "Criar teste",
+                        widget.test != null && !widget.isCopyMode? "Editar teste" : "Criar teste",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Spacer(),
