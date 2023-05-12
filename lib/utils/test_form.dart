@@ -32,7 +32,9 @@ class _TestFormState extends State<TestForm> {
   final requestTextController = TextEditingController();
   final resultTextController = TextEditingController();
   final nameTextController = TextEditingController();
+  final delayTextController = TextEditingController();
   final key = GlobalKey<FormState>();
+  static const minDelayInMs = 100;
 
   @override
   void initState() {
@@ -41,6 +43,8 @@ class _TestFormState extends State<TestForm> {
       nameTextController.text = widget.test!.name;
       resultTextController.text = widget.test!.expect;
     }
+    delayTextController.text =
+        widget.test?.delay.inMilliseconds.toString() ?? minDelayInMs.toString();
     super.initState();
   }
 
@@ -49,6 +53,7 @@ class _TestFormState extends State<TestForm> {
     requestTextController.dispose();
     resultTextController.dispose();
     nameTextController.dispose();
+    delayTextController.dispose();
     super.dispose();
   }
 
@@ -56,10 +61,10 @@ class _TestFormState extends State<TestForm> {
     if (!key.currentState!.validate()) return;
     final navigator = Navigator.of(context);
     await widget.onSaved(Test(
-      name: nameTextController.text,
-      request: requestTextController.text,
-      expect: resultTextController.text,
-    ));
+        name: nameTextController.text,
+        request: requestTextController.text,
+        expect: resultTextController.text,
+        delay: Duration(milliseconds: int.parse(delayTextController.text))));
     navigator.maybePop();
   }
 
@@ -83,7 +88,9 @@ class _TestFormState extends State<TestForm> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        widget.test != null && !widget.isCopyMode? "Editar teste" : "Criar teste",
+                        widget.test != null && !widget.isCopyMode
+                            ? "Editar teste"
+                            : "Criar teste",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Spacer(),
@@ -164,6 +171,31 @@ class _TestFormState extends State<TestForm> {
                     },
                     decoration: InputDecoration(
                       label: Text('Resposta esperada'),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: delayTextController,
+                    textInputAction: TextInputAction.done,
+                    // onEditingComplete: send,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'\d|[0-9]'),
+                      ),
+                    ],
+                    validator: (v) {
+                      if (v?.isEmpty == true) return "Campo obrigatório";
+                      // final lint = lintVerifications(v!);
+                      // if (lint != null) return lint;
+                      final durationInMs = int.tryParse(v!);
+                      if (durationInMs == null) return 'Número inválido';
+                      if (durationInMs < minDelayInMs)
+                        return 'Precisa ser pelo menos ${minDelayInMs}ms';
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      label: Text('Atraso (ms)'),
                       border: OutlineInputBorder(),
                     ),
                   ),

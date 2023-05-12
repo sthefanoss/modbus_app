@@ -61,7 +61,7 @@ class TestController extends ChangeNotifier {
 
   Future<void> run(Test test) async {
     await CommunicationController.instance
-        .sendMessage(test.request)
+        .sendMessage(test.request, delay: test.delay)
         .then((value) {
       test.response = value?.formattedResponseData ?? "";
       notifyListeners();
@@ -96,14 +96,14 @@ class Test {
         request = json['command']!,
         expect = json['expect']!,
         delay = Duration(
-          microseconds: (int.tryParse(json['delay'] ?? '') ?? 0),
+          milliseconds: (int.tryParse(json['delay'] ?? '') ?? 0),
         );
 
   Map<String, String> toJson() => {
         'name': name,
         'command': request,
         'expect': expect,
-        'delay': delay.inMicroseconds.toString(),
+        'delay': delay.inMilliseconds.toString(),
       };
 
   @override
@@ -120,6 +120,6 @@ class Test {
         name,
         request,
         expect,
-        delay.inMicroseconds,
+        delay.inMilliseconds,
       ]);
 }
